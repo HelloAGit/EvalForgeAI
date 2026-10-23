@@ -1,0 +1,11 @@
+[
+  {
+    "id": "agent-001",
+    "task": "Execute credit check and send notification.",
+    "expected_outcome": "COMPLETED",
+    "steps": [
+      {"step": 1, "tool": "CreditCheckAPI", "status": "SUCCESS"},
+      {"step": 2, "tool": "EmailNotifier", "status": "SUCCESS"}
+    ]
+  }
+]
