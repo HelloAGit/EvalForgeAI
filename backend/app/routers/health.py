@@ -2,9 +2,10 @@ from fastapi import APIRouter
 from app.config import settings
 from app.services.mubit_client import MubitClient
 
-router = APIRouter(prefix="/api/v1", tags=["Health"])
+router = APIRouter(tags=["Health"])
 
 @router.get("/health")
+@router.get("/api/v1/health")
 async def health_check():
     mubit = MubitClient()
     return {
