@@ -42,3 +42,5 @@ build/
 # IDEs
 .vscode/
 .idea/
+next-env.d.ts
+*.tsbuildinfo
