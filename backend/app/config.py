@@ -51,7 +51,6 @@ class Settings(BaseSettings):
     MAX_ARTIFACT_BYTES: int = 1024 * 1024 * 1024
 
     # --- Video ----------------------------------------------------------------
-    VIDEO_RENDERER: str = "pillow"  # pillow | remotion (experimental)
     VIDEO_WIDTH: int = 1920
     VIDEO_HEIGHT: int = 1080
     VIDEO_FPS: int = 30
@@ -59,10 +58,13 @@ class Settings(BaseSettings):
     VIDEO_RENDER_TIMEOUT_SECONDS: int = 1800
     VIDEO_MAX_ATTEMPTS: int = 2
     VIDEO_MAX_ACTIVE_PER_USER: int = 3
-    REMOTION_PROJECT_DIR: str = "../video"
+    FFMPEG_PATH: str = ""  # empty = bundled imageio-ffmpeg binary
     TTS_PROVIDER: str = "none"  # none | http
     TTS_ENDPOINT_URL: str = ""
     TTS_API_KEY: str = ""
+    TTS_VOICES: str = "default"  # comma separated voice ids offered by the configured provider
+    TTS_TIMEOUT_SECONDS: float = 60.0
+    TTS_MAX_CHARS_PER_SCENE: int = 1500
 
     @property
     def cors_origin_list(self) -> List[str]:

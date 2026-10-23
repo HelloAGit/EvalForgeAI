@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import dashboard, evaluations, health, mubit, reports, schedules, statistics
+from app.routers import dashboard, evaluations, health, mubit, reports, schedules, statistics, videos
 
 logger = logging.getLogger("evalforge")
 
@@ -51,3 +51,4 @@ app.include_router(dashboard.router)
 app.include_router(evaluations.router)
 app.include_router(schedules.router)
 app.include_router(reports.router)
+app.include_router(videos.router)
