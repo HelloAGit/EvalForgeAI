@@ -2,7 +2,7 @@
 
 ## Authentication and authorisation
 
-* Every `/api/v1/*` endpoint except `GET /api/v1/health` requires an `Authorization` header using the bearer scheme with a configured token (or `?access_token=` for SSE, which cannot set headers).
+* Every `/api/v1/*` endpoint except `GET /api/v1/health` requires an `Authorization` header using the bearer scheme with a configured token (the SSE client uses fetch streaming so the header is used there too).
 * Tokens are configured in `EVALFORGE_API_KEYS` as `token:user_id:role` (comma separated; role `admin` or `user`). Compared with constant-time `compare_digest`. Use long random values (`openssl rand -hex 32`). If no key is configured, every protected request is refused (fail closed).
 * `AUTH_DISABLED=true` is honoured **only** when `APP_ENV=development`.
 * Reports, snapshots, PDFs, video jobs and videos are owned by the creating user; other non-admin users receive **404** (existence is not disclosed). Admins can access all. Schedules can be created/enabled/disabled/triggered by admins only.
