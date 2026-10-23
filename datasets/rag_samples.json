@@ -1,0 +1,9 @@
+[
+  {
+    "id": "rag-001",
+    "query": "What is the capital requirement ratio specified in Article 4?",
+    "expected_answer": "The minimum requirement ratio is 8.5%.",
+    "relevant_doc_ids": ["doc-104"],
+    "retrieved_doc_ids": ["doc-104", "doc-201", "doc-305"]
+  }
+]
