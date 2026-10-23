@@ -1,28 +1,80 @@
-version: '3.8'
+# Local / single-host deployment. Secrets are read from the environment or an untracked .env file; none are embedded here.
+x-backend-env: &backend-env
+  APP_ENV: ${APP_ENV:-production}
+  DATABASE_URL: ${DATABASE_URL:-sqlite:////data/evalforge.db}
+  ARTIFACT_DIR: /data/artifacts
+  EVALFORGE_API_KEYS: ${EVALFORGE_API_KEYS:?Set EVALFORGE_API_KEYS (token:user:role,...) in .env}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+  MUBIT_API_KEY: ${MUBIT_API_KEY:-}
+  MUBIT_ANTHROPIC_BASE_URL: ${MUBIT_ANTHROPIC_BASE_URL:-https://api.mubit.ai/anthropic}
+  MUBIT_ANTHROPIC_MODEL: ${MUBIT_ANTHROPIC_MODEL:-claude-haiku-4-5}
+  TTS_PROVIDER: ${TTS_PROVIDER:-none}
+  TTS_ENDPOINT_URL: ${TTS_ENDPOINT_URL:-}
+  TTS_API_KEY: ${TTS_API_KEY:-}
+  TTS_VOICES: ${TTS_VOICES:-default}
 
 services:
   backend:
+    image: ghcr.io/helloagit/evalforgeai:${EVALFORGE_TAG:-latest}
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      target: web
+    environment: *backend-env
     ports:
-      - "8000:8000"
-    environment:
-      - APP_ENV=development
-      - DATABASE_URL=sqlite:///./evalforge.db
-      - MUBIT_API_KEY=${MUBIT_API_KEY: mbt_mw-app_157a543dbd714568_8ef71cb4b4924cc0bc3a25c70893d9a2208113bca198467cb57969b615715bf4}
-      - MUBIT_ANTHROPIC_BASE_URL=https://api.mubit.ai/anthropic
-      - MUBIT_ANTHROPIC_MODEL=claude-haiku-4-5
+      - "${BACKEND_PORT:-8000}:8000"
     volumes:
-      - ./backend/data:/app/data
+      - evalforge-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    stop_grace_period: 40s
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 1g
+    cpus: 1.0
+    restart: unless-stopped
+
+  worker:
+    image: ghcr.io/helloagit/evalforgeai-worker:${EVALFORGE_TAG:-latest}
+    build:
+      context: ./backend
+      target: worker
+    environment:
+      <<: *backend-env
+      VIDEO_WIDTH: ${VIDEO_WIDTH:-1920}
+      VIDEO_HEIGHT: ${VIDEO_HEIGHT:-1080}
+      VIDEO_FPS: ${VIDEO_FPS:-30}
+    volumes:
+      - evalforge-data:/data
+    depends_on:
+      backend:
+        condition: service_healthy
+    stop_grace_period: 60s
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: ${WORKER_MEM_LIMIT:-2g}
+    cpus: ${WORKER_CPUS:-2.0}
+    restart: unless-stopped
 
   frontend:
+    image: ghcr.io/helloagit/evalforgeai-frontend:${EVALFORGE_TAG:-latest}
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
     ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+      - "${FRONTEND_PORT:-3000}:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 512m
+    cpus: 0.5
+    restart: unless-stopped
+
+volumes:
+  evalforge-data:
