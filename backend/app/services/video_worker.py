@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.models.entities import GeneratedArtifact, ReportSnapshot, VideoJob, utcnow
-from app.services import narrative, video_renderer
+from app.services import narrative
 from app.services.mubit_gateway import MubitGateway
 from app.services.storage import get_storage
 from app.services.tts import TTSError, get_tts
@@ -119,6 +119,7 @@ def _generate_script(db: Session, job: VideoJob, gateway: Any) -> None:
 
 
 def _render(db: Session, job: VideoJob, renderer: Any, tts: Any) -> None:
+    from app.services import video_renderer  # lazy: keeps Pillow/ffmpeg out of the web image
     job_id = job.id
     workdir = None
     renderer = renderer or video_renderer.PillowRenderer()

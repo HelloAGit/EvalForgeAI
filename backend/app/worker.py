@@ -3,6 +3,7 @@
 Run with ``python -m app.worker``. Safe to run as several processes (all claims are atomic).
 """
 import logging
+import os
 import signal
 import threading
 import time
@@ -44,6 +45,18 @@ def run_forever(stop: threading.Event) -> None:
     logger.info("worker %s stopped", worker_id)
 
 
+def _heartbeat(stop: threading.Event) -> None:
+    """Touches a file every few seconds (also while a long render blocks the main loop) for the container health check."""
+    path = settings.WORKER_HEARTBEAT_FILE
+    while not stop.is_set():
+        try:
+            with open(path, "a"):
+                os.utime(path, None)
+        except OSError:
+            pass
+        stop.wait(10)
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
     if settings.AUTO_MIGRATE:
@@ -52,6 +65,7 @@ def main() -> None:
     stop = threading.Event()
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stop.set())  # graceful shutdown: finish the current unit, then exit
+    threading.Thread(target=_heartbeat, args=(stop,), daemon=True).start()
     run_forever(stop)
 
 

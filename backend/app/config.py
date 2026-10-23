@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     WORKER_POLL_SECONDS: float = 2.0
     WORKER_LEASE_SECONDS: int = 600
     WORKER_INLINE: bool = False
+    WORKER_HEARTBEAT_FILE: str = "/tmp/evalforge-worker-heartbeat"
 
     # --- Artefact storage -----------------------------------------------------
     ARTIFACT_DIR: str = "./data/artifacts"

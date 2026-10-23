@@ -1,0 +1,2 @@
+# Extra packages for the render worker image only (bundled static FFmpeg binary).
+imageio-ffmpeg>=0.5.1
