@@ -1,0 +1,14 @@
+[
+  {
+    "id": "fin-001",
+    "question": "If Company A has a Net Income of $500,000 and Total Revenue of $2,500,000, what is the Net Profit Margin?",
+    "expected_answer": "20%",
+    "numerical_target": 20.0
+  },
+  {
+    "id": "fin-002",
+    "question": "Calculate Working Capital if Current Assets are $1,200,000 and Current Liabilities are $800,000.",
+    "expected_answer": "$400,000",
+    "numerical_target": 400000.0
+  }
+]
