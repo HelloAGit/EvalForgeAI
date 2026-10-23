@@ -1,3 +1,4 @@
+import math
 from typing import List, Dict, Any
 
 class RAGMetricsEngine:
@@ -24,9 +25,19 @@ class RAGMetricsEngine:
                 return 1.0 / (index + 1)
         return 0.0
 
+    @staticmethod
+    def ndcg_at_k(retrieved_ids: List[str], relevant_ids: List[str], k: int) -> float:
+        """NDCG@k with binary relevance."""
+        if not relevant_ids:
+            return 1.0
+        dcg = sum(1.0 / math.log2(i + 2) for i, doc in enumerate(retrieved_ids[:k]) if doc in relevant_ids)
+        idcg = sum(1.0 / math.log2(i + 2) for i in range(min(k, len(relevant_ids))))
+        return dcg / idcg if idcg else 0.0
+
     def evaluate_retrieval(self, retrieved: List[str], relevant: List[str], k: int = 3) -> Dict[str, float]:
         return {
             f"precision_at_{k}": self.precision_at_k(retrieved, relevant, k),
             f"recall_at_{k}": self.recall_at_k(retrieved, relevant, k),
+            f"ndcg_at_{k}": self.ndcg_at_k(retrieved, relevant, k),
             "mrr": self.mean_reciprocal_rank(retrieved, relevant)
         }
