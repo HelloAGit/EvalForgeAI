@@ -2,9 +2,13 @@
 
 Mubit-powered AI testing, LLM evaluation, RAG quality analytics, agent diagnostics, and statistical intelligence platform.
 
+## Deployed App
+
+https://pixel-perfect-picture-369.lovable.app/
+
 ## Overview
 
-EvalForgeAI is a full-stack platform for evaluating and improving AI systems. It combines experiment execution, quality analytics, and diagnostic tooling so teams can continuously measure and improve model and agent behavior.
+EvalForgeAI is a full-stack platform for evaluating and improving AI systems. It combines experiment execution, quality analytics, and diagnostic tooling so teams can continuously measure and impro[...]
 
 Core goals:
 - Evaluate LLM output quality and consistency
